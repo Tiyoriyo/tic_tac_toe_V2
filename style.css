@@ -1,0 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.MainContainer {
+    display: flex;
+    border: 1px solid black;
+}
+
+.Canvas {
+    display: flex;
+    flex: auto;
+    flex-wrap: wrap;
+}
+
+.Square {
+    display: flex;
+    flex: 1 1 30%;
+    border: 1px solid black;
+}
