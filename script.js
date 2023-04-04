@@ -63,12 +63,12 @@ const Intro = (() => {
                 Game.player2 = Game.PlayerCreator(ply2Choice);
                 Game.gameType = 'pvp';
                 Body.innerHTML = '';
-                Render._render();
+                Render.render();
             }
       
         } else if (type === 'cpu') {
             const plyChoiceList = document.getElementsByName('GameType');
-            let plyChoice = [...plyChoiceList].find((element) => element.checked)?.id;
+            const plyChoice = [...plyChoiceList].find((element) => element.checked)?.id;
             
             if (!plyChoice) {
                 alert('You need to pick a team');
@@ -77,7 +77,7 @@ const Intro = (() => {
                 Game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'y' : 'x');
                 Game.gameType = 'cpu';
                 Body.innerHTML = '';
-                Render._render();
+                Render.render();
             }
         }
     };
@@ -85,7 +85,7 @@ const Intro = (() => {
 })();
 
 const Render = (() => {
-    const _render = () => {
+    const render = () => {
         const Body = document.querySelector('body');
         
         const MainContainer = document.createElement('div');
@@ -115,7 +115,7 @@ const Render = (() => {
     }
 
     return {
-        _render
+        render
     }
 })();
 
