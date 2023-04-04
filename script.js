@@ -109,8 +109,9 @@ const Intro = (() => {
             if ((Ply1Choice == Ply2Choice) || Ply1Choice == undefined || Ply2Choice == undefined) {
                 alert('You need to pick two opposing teams');
             } else {
-                Game.Player1 = Game.PlayerCreator(Ply1Choice);
-                Game.Player2 = Game.PlayerCreator(Ply2Choice);
+                Game.player1 = Game.PlayerCreator(Ply1Choice);
+                Game.player2 = Game.PlayerCreator(Ply2Choice);
+                Game.gameType = 'pvp';
 
                 Body.innerHTML = '';
 
@@ -122,7 +123,31 @@ const Intro = (() => {
 
         } else if (type == 'CPU') {
 
+            const PlyChoiceList = document.getElementsByName('GameType');
+            
+            let PlyChoice;
 
+            for (let i = 0; i < PlyChoiceList.length; i++) {
+                if (PlyChoiceList[i].checked) {
+                    PlyChoice = PlyChoiceList[i].id;
+                }
+            }
+
+            if (PlyChoice == undefined) {
+                alert("You need to pick a team");
+            } else {
+                Game.player1 = Game.PlayerCreator(PlyChoice);
+                if (PlyChoice == 'x') {
+                    Game.player2 = Game.PlayerCreator('y');
+                } else {
+                    Game.player2 = Game.PlayerCreator('x');
+                }
+                Game.gameType('cpu');
+
+                Body.innerHTML = '';
+
+                Render._render();
+            }
 
         }
     }
@@ -171,12 +196,15 @@ const Game = (() => {
                     null, null, null
     ];
 
-    let Player1;
-    let Player2;
+    let gameType = null;
+    let player1;
+    let player2;
 
     const PlayerCreator = team => {return {team}};
 
-    return { Board, PlayerCreator, Player1, Player2 }
+    const setGameType = type => {gameType = type} 
+
+    return { Board, PlayerCreator, setGameType, player1, player2, gameType }
 })();
 
 
