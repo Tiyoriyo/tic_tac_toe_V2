@@ -4,101 +4,83 @@ import { htmlLines } from "./htmlLines.js";
 const Intro = (() => {
     const Body = document.querySelector('body');
 
-    const GameTypeSelect = () => {
-        Body.innerHTML = htmlLines.GameSelection;
-    
-        const Buttons = document.querySelectorAll('button');
-        Buttons.forEach(function(x) {
-            x.addEventListener('click', (e) => {
-                if (e.target.className == 'PvPBtn') {
-                    Body.innerHTML = '';
-                    SetNameRender('PvP');
-                } else if (e.target.className == 'CPUBtn') {
-                    Body.innerHTML = '';
-                    SetNameRender('CPU');
-                }
+    const GameTypeSelect = (() => {
+        const Render = () => {
+            Body.innerHTML = htmlLines.GameSelection;
+        
+            const Buttons = document.querySelectorAll('button');
+            Buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    if (e.target.className == 'PvPBtn') {
+                        Body.innerHTML = '';
+                        SetNameRender('pvp');
+                    } else if (e.target.className == 'CPUBtn') {
+                        Body.innerHTML = '';
+                        SetNameRender('cpu');
+                    }
+                });
             });
-        });
-    };
+        }
 
-    GameTypeSelect();    
+        Render();
+        return { Render };
+    })();
+
+     
 
     const SetNameRender = (type) => {
-        if (type == 'PvP') {
+        if (type == 'pvp') {
             Body.innerHTML = htmlLines.PVPTeamSelection;
-        } else if (type == 'CPU') {
+        } else if (type == 'cpu') {
             Body.innerHTML = htmlLines.CPUTeamSelection;
         }
 
-        document.querySelector('.BackBtn').addEventListener('click', GameTypeSelect);
-        document.querySelector('.ConfirmBtn').addEventListener('click', () => { ConfirmGame(type) });
+        document.querySelector('.BackBtn').addEventListener('click', GameTypeSelect.Render);
+        document.querySelector('.ConfirmBtn').addEventListener('click', () => { confirmGame(type) });
     }
 
-    const ConfirmGame = (type) => {
-        if (type == 'PvP') {
-
-            const Ply1ChoiceList = document.getElementsByName('Ply1GameType');
-            const Ply2ChoiceList = document.getElementsByName('Ply2GameType');
-
-            let Ply1Choice;
-            let Ply2Choice; 
-
-            for (let i = 0; i < Ply1ChoiceList.length; i++) {
-                if (Ply1ChoiceList[i].checked) {
-                    Ply1Choice = Ply1ChoiceList[i].id;
+    const confirmGame = (type) => {
+        if (type === 'pvp') {
+            const ply1ChoiceList = document.getElementsByName('Ply1GameType');
+            const ply2ChoiceList = document.getElementsByName('Ply2GameType');
+            let ply1Choice;
+            let ply2Choice;
+      
+            for (let i = 0; i < ply1ChoiceList.length; i++) {
+                if (ply1ChoiceList[i].checked) {
+                    ply1Choice = ply1ChoiceList[i].id;
                 }
-
-                if (Ply2ChoiceList[i].checked) {
-                    Ply2Choice = Ply2ChoiceList[i].id;
+      
+                if (ply2ChoiceList[i].checked) {
+                    ply2Choice = ply2ChoiceList[i].id;
                 }
             }
-
-            if ((Ply1Choice == Ply2Choice) || Ply1Choice == undefined || Ply2Choice == undefined) {
-                alert('You need to pick two opposing teams');
+      
+            if (!ply1Choice || !ply2Choice || ply1Choice === ply2Choice) {
+                alert('You must pick two oppossing teams.');
             } else {
-                Game.player1 = Game.PlayerCreator(Ply1Choice);
-                Game.player2 = Game.PlayerCreator(Ply2Choice);
+                Game.player1 = Game.PlayerCreator(ply1Choice);
+                Game.player2 = Game.PlayerCreator(ply2Choice);
                 Game.gameType = 'pvp';
-
                 Body.innerHTML = '';
-
                 Render._render();
             }
-
+      
+        } else if (type === 'cpu') {
+            const plyChoiceList = document.getElementsByName('GameType');
+            let plyChoice = [...plyChoiceList].find((element) => element.checked)?.id;
             
-
-
-        } else if (type == 'CPU') {
-
-            const PlyChoiceList = document.getElementsByName('GameType');
-            
-            let PlyChoice;
-
-            for (let i = 0; i < PlyChoiceList.length; i++) {
-                if (PlyChoiceList[i].checked) {
-                    PlyChoice = PlyChoiceList[i].id;
-                }
-            }
-
-            if (PlyChoice == undefined) {
-                alert("You need to pick a team");
+            if (!plyChoice) {
+                alert('You need to pick a team');
             } else {
-                Game.player1 = Game.PlayerCreator(PlyChoice);
-                if (PlyChoice == 'x') {
-                    Game.player2 = Game.PlayerCreator('y');
-                } else {
-                    Game.player2 = Game.PlayerCreator('x');
-                }
-                Game.gameType('cpu');
-
+                Game.player1 = Game.PlayerCreator(plyChoice);
+                Game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'y' : 'x');
+                Game.gameType = 'cpu';
                 Body.innerHTML = '';
-
                 Render._render();
             }
-
         }
-    }
-
+    };
 
 })();
 
