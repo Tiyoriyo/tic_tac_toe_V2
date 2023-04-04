@@ -10,9 +10,49 @@ html {
 body {
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 15px;
 }
+
+
+
+
+.InputFieldContainer, .TeamFieldContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.InputField {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   
+    gap: 5px;
+}
+
+.InputTitle, .TeamField {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.ButtonSet {
+    display: flex;
+    gap: 15px;
+}
+
+Button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75px;
+    height: 25px;
+}
+
+
 
 .MainContainer {
     display: flex;
