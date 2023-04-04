@@ -19,32 +19,32 @@ body {
 
 
 
-.InputFieldContainer, .TeamFieldContainer {
+.inputFieldContainer, .teamFieldContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
 }
 
-.InputField {
+.inputField {
     display: flex;
     flex-direction: column;
     align-items: center;   
     gap: 5px;
 }
 
-.InputTitle, .TeamField {
+.inputTitle, .teamField {
     display: flex;
     gap: 15px;
     justify-content: center;
 }
 
-.ButtonSet {
+.buttonSet {
     display: flex;
     gap: 15px;
 }
 
-Button {
+button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,18 +54,18 @@ Button {
 
 
 
-.MainContainer {
+.mainContainer {
     display: flex;
     border: 1px solid black;
 }
 
-.Canvas {
+.canvas {
     display: flex;
     flex: auto;
     flex-wrap: wrap;
 }
 
-.Square {
+.square {
     display: flex;
     justify-content: center;
     align-items: center;

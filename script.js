@@ -1,48 +1,48 @@
 import { htmlLines } from "./htmlLines.js";
 
 
-const Intro = (() => {
-    const Body = document.querySelector('body');
+const intro = (() => {
+    const body = document.querySelector('body');
 
-    const GameTypeSelect = (() => {
-        const Render = () => {
-            Body.innerHTML = htmlLines.GameSelection;
+    const gameTypeSelect = (() => {
+        const render = () => {
+            body.innerHTML = htmlLines.gameSelection;
         
-            const Buttons = document.querySelectorAll('button');
-            Buttons.forEach(button => {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    if (e.target.className == 'PvPBtn') {
-                        Body.innerHTML = '';
-                        SetNameRender('pvp');
-                    } else if (e.target.className == 'CPUBtn') {
-                        Body.innerHTML = '';
-                        SetNameRender('cpu');
+                    if (e.target.className == 'pvpBtn') {
+                        body.innerHTML = '';
+                        setNameRender('pvp');
+                    } else if (e.target.className == 'cpuBtn') {
+                        body.innerHTML = '';
+                        setNameRender('cpu');
                     }
                 });
             });
         }
 
-        Render();
-        return { Render };
+        render();
+        return { render };
     })();
 
      
 
-    const SetNameRender = (type) => {
+    const setNameRender = (type) => {
         if (type == 'pvp') {
-            Body.innerHTML = htmlLines.PVPTeamSelection;
+            body.innerHTML = htmlLines.pvpTeamSelection;
         } else if (type == 'cpu') {
-            Body.innerHTML = htmlLines.CPUTeamSelection;
+            body.innerHTML = htmlLines.cpuTeamSelection;
         }
 
-        document.querySelector('.BackBtn').addEventListener('click', GameTypeSelect.Render);
-        document.querySelector('.ConfirmBtn').addEventListener('click', () => { confirmGame(type) });
+        document.querySelector('.backBtn').addEventListener('click', gameTypeSelect.render);
+        document.querySelector('.confirmBtn').addEventListener('click', () => { confirmGame(type) });
     }
 
     const confirmGame = (type) => {
         if (type === 'pvp') {
-            const ply1ChoiceList = document.getElementsByName('Ply1GameType');
-            const ply2ChoiceList = document.getElementsByName('Ply2GameType');
+            const ply1ChoiceList = document.getElementsByName('ply1GameType');
+            const ply2ChoiceList = document.getElementsByName('ply2GameType');
             let ply1Choice;
             let ply2Choice;
       
@@ -59,81 +59,79 @@ const Intro = (() => {
             if (!ply1Choice || !ply2Choice || ply1Choice === ply2Choice) {
                 alert('You must pick two oppossing teams.');
             } else {
-                Game.player1 = Game.PlayerCreator(ply1Choice);
-                Game.player2 = Game.PlayerCreator(ply2Choice);
-                Game.gameType = 'pvp';
-                Body.innerHTML = '';
-                Render.render();
+                game.player1 = game.PlayerCreator(ply1Choice);
+                game.player2 = game.PlayerCreator(ply2Choice);
+                game.gameType = 'pvp';
+                body.innerHTML = '';
+                render.render();
             }
       
         } else if (type === 'cpu') {
-            const plyChoiceList = document.getElementsByName('GameType');
+            const plyChoiceList = document.getElementsByName('gameType');
             const plyChoice = [...plyChoiceList].find((element) => element.checked)?.id;
             
             if (!plyChoice) {
                 alert('You need to pick a team');
             } else {
-                Game.player1 = Game.PlayerCreator(plyChoice);
-                Game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'y' : 'x');
-                Game.gameType = 'cpu';
-                Body.innerHTML = '';
-                Render.render();
+                game.player1 = Game.PlayerCreator(plyChoice);
+                game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'y' : 'x');
+                game.gameType = 'cpu';
+                body.innerHTML = '';
+                render.render();
             }
         }
     };
 
 })();
 
-const Render = (() => {
+const render = (() => {
     const render = () => {
-        const Body = document.querySelector('body');
-        
-        const MainContainer = document.createElement('div');
-        const Width = 500;
-        MainContainer.className = 'MainContainer';
-        MainContainer.style = `width: ${Width}px; height: ${Width}px`
+        const body = document.querySelector('body');
+        const mainContainer = document.createElement('div');
+        const wHeight = 500;
+
+        mainContainer.className = 'mainContainer';
+        mainContainer.style = `width: ${wHeight}px; height: ${wHeight}px`
     
-        const Canvas = document.createElement('div');
-        Canvas.className = 'Canvas';
+        const canvas = document.createElement('div');
+        canvas.className = 'canvas';
     
-        MainContainer.appendChild(Canvas);
+        mainContainer.appendChild(canvas);
         
         for (let i = 0; i < 9; i++) {
-            const Square = document.createElement('div');
-            Square.className = 'Square';
+            const square = document.createElement('div');
+            square.className = 'square';
 
-            if (Game.Board[i] == 'x') {
-                Square.textContent = 'X';
-            } else if (Game.Board[i] == 'o') {
-                Square.textContent = 'O';
+            if (game.board[i] == 'x') {
+                square.textContent = 'X';
+            } else if (game.board[i] == 'o') {
+                square.textContent = 'O';
             }
 
-            Canvas.appendChild(Square);
+            canvas.appendChild(square);
         }
        
-        Body.appendChild(MainContainer);
+        body.appendChild(mainContainer);
     }
 
     return {
         render
     }
+
 })();
 
-const Game = (() => {
-    const Board = [null, null, null,
-                    null, null, null,
-                    null, null, null
-    ];
-
+const game = (() => {
+    const board = [null, null, null, null, null, null, null, null, null];
     let gameType = null;
-    let player1;
-    let player2;
+    let player1 = null;
+    let player2 = null;
 
     const PlayerCreator = team => {return {team}};
 
     const setGameType = type => {gameType = type} 
 
-    return { Board, PlayerCreator, setGameType, player1, player2, gameType }
+    return { board, PlayerCreator, setGameType, player1, player2, gameType }
+    
 })();
 
 

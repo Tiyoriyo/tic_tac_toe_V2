@@ -1,58 +1,58 @@
 export const htmlLines = {
-    GameSelection: `
-    <div class = 'GameTitle'>Tic Tac Toe</div>
-    <div class = 'ButtonSet'>
-        <button class = 'PvPBtn'>Player</button>
-        <button class = 'CPUBtn'>Computer</button>
+    gameSelection: `
+    <div class = 'gameTitle'>Tic Tac Toe</div>
+    <div class = 'buttonSet'>
+        <button class = 'pvpBtn'>Player</button>
+        <button class = 'cpuBtn'>Computer</button>
     </div>`,
-    PVPTeamSelection: `
-    <div class = 'GameTitle'>Tic Tac Toe</div>
-    <div class = 'InputFieldContainer'>
-        <div class ='InputField'>
-            <div class ='InputTitle'>Player 1</div>
-            <div class = 'TeamFieldContainer'>
-                <div class ='TeamField'>
-                    <div class = 'TeamSign'>X</div>
-                    <input type = 'radio' id = 'x' name = 'Ply1GameType'></radio>
+    pvpTeamSelection: `
+    <div class = 'gameTitle'>Tic Tac Toe</div>
+    <div class = 'inputFieldContainer'>
+        <div class ='inputField'>
+            <div class ='inputTitle'>Player 1</div>
+            <div class = 'teamFieldContainer'>
+                <div class ='teamField'>
+                    <div class = 'teamSign'>X</div>
+                    <input type = 'radio' id = 'x' name = 'ply1GameType'></radio>
                 </div>
-                <div class ='TeamField'>
-                    <div class ='TeamSign'>Y</div>
-                    <input type = 'radio' id = 'y' name = 'Ply1GameType'></radio>
+                <div class ='teamField'>
+                    <div class ='teamSign'>Y</div>
+                    <input type = 'radio' id = 'y' name = 'ply1GameType'></radio>
                 </div>
             </div>
         </div>
-        <div class ='InputField'>
-            <div class ='InputTitle'>Player 2</div>
-            <div class = 'TeamFieldContainer'>
-                <div class ='TeamField'>
-                    <div class = 'TeamSign'>X</div>
-                    <input type = 'radio' id = 'x' name = 'Ply2GameType'></radio>
+        <div class ='inputField'>
+            <div class ='inputTitle'>Player 2</div>
+            <div class = 'teamFieldContainer'>
+                <div class ='teamField'>
+                    <div class = 'teamSign'>X</div>
+                    <input type = 'radio' id = 'x' name = 'ply2GameType'></radio>
                 </div>
-                <div class ='TeamField'>
-                    <div class ='TeamSign'>Y</div>
-                    <input type = 'radio' id = 'y' name = 'Ply2GameType'></radio>
+                <div class ='teamField'>
+                    <div class ='teamSign'>Y</div>
+                    <input type = 'radio' id = 'y' name = 'ply2GameType'></radio>
                 </div>
             </div>
         </div>
     </div>
-    <div class = 'ButtonSet'>
-        <button class = 'BackBtn'>Back</button>
-        <button class = 'ConfirmBtn'>Confirm</button>
+    <div class = 'buttonSet'>
+        <button class = 'backBtn'>Back</button>
+        <button class = 'confirmBtn'>Confirm</button>
     </div>`,
-    CPUTeamSelection: `
-    <div class = 'GameTitle'>Tic Tac Toe</div>
-    <div class = 'TeamFieldContainer'>
-        <div class ='TeamField'>
-            <div class = 'TeamSign'>X</div>
-            <input type = 'radio' id = 'x' name = 'GameType'></radio>
+    cpuTeamSelection: `
+    <div class = 'gameTitle'>Tic Tac Toe</div>
+    <div class = 'teamFieldContainer'>
+        <div class ='teamField'>
+            <div class = 'teamSign'>X</div>
+            <input type = 'radio' id = 'x' name = 'gameType'></radio>
         </div>
-        <div class ='TeamField'>
-            <div class ='TeamSign'>Y</div>
-            <input type = 'radio' id = 'y' name = 'GameType'></radio>
+        <div class ='teamField'>
+            <div class ='teamSign'>Y</div>
+            <input type = 'radio' id = 'y' name = 'gameType'></radio>
         </div>
     </div>
-    <div class = 'ButtonSet'>
-        <button class = 'BackBtn'>Back</button>
-        <button class = 'ConfirmBtn'>Confirm</button>
+    <div class = 'buttonSet'>
+        <button class = 'backBtn'>Back</button>
+        <button class = 'confirmBtn'>Confirm</button>
     </div>`
 };
