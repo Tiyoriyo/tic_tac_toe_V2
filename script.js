@@ -1,14 +1,11 @@
+import { htmlLines } from "./htmlLines.js";
+
+
 const Intro = (() => {
     const Body = document.querySelector('body');
 
     const GameTypeSelect = () => {
-        Body.innerHTML = `
-            <div class = 'GameTitle'>Tic Tac Toe</div>
-            <div class = 'ButtonSet'>
-                <button class = 'PvPBtn'>Player</button>
-                <button class = 'CPUBtn'>Computer</button>
-            </div>
-        `
+        Body.innerHTML = htmlLines.GameSelection;
     
         const Buttons = document.querySelectorAll('button');
         Buttons.forEach(function(x) {
@@ -28,59 +25,9 @@ const Intro = (() => {
 
     const SetNameRender = (type) => {
         if (type == 'PvP') {
-            Body.innerHTML = `
-            <div class = 'GameTitle'>Tic Tac Toe</div>
-            <div class = 'InputFieldContainer'>
-                <div class ='InputField'>
-                    <div class ='InputTitle'>Player 1</div>
-                    <div class = 'TeamFieldContainer'>
-                        <div class ='TeamField'>
-                            <div class = 'TeamSign'>X</div>
-                            <input type = 'radio' id = 'x' name = 'Ply1GameType'></radio>
-                        </div>
-                        <div class ='TeamField'>
-                            <div class ='TeamSign'>Y</div>
-                            <input type = 'radio' id = 'y' name = 'Ply1GameType'></radio>
-                        </div>
-                    </div>
-                </div>
-                <div class ='InputField'>
-                    <div class ='InputTitle'>Player 2</div>
-                    <div class = 'TeamFieldContainer'>
-                        <div class ='TeamField'>
-                            <div class = 'TeamSign'>X</div>
-                            <input type = 'radio' id = 'x' name = 'Ply2GameType'></radio>
-                        </div>
-                        <div class ='TeamField'>
-                            <div class ='TeamSign'>Y</div>
-                            <input type = 'radio' id = 'y' name = 'Ply2GameType'></radio>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class = 'ButtonSet'>
-                <button class = 'BackBtn'>Back</button>
-                <button class = 'ConfirmBtn'>Confirm</button>
-            </div>
-            `
+            Body.innerHTML = htmlLines.PVPTeamSelection;
         } else if (type == 'CPU') {
-            Body.innerHTML = `
-            <div class = 'GameTitle'>Tic Tac Toe</div>
-            <div class = 'TeamFieldContainer'>
-                <div class ='TeamField'>
-                    <div class = 'TeamSign'>X</div>
-                    <input type = 'radio' id = 'x' name = 'GameType'></radio>
-                </div>
-                <div class ='TeamField'>
-                    <div class ='TeamSign'>Y</div>
-                    <input type = 'radio' id = 'y' name = 'GameType'></radio>
-                </div>
-            </div>
-            <div class = 'ButtonSet'>
-                <button class = 'BackBtn'>Back</button>
-                <button class = 'ConfirmBtn'>Confirm</button>
-            </div>
-            `
+            Body.innerHTML = htmlLines.CPUTeamSelection;
         }
 
         document.querySelector('.BackBtn').addEventListener('click', GameTypeSelect);
