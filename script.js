@@ -134,6 +134,10 @@ const game = (() => {
     
 })();
 
+window.game = game;
+window.intro = intro;
+window.render = render;
+
 
 
 
