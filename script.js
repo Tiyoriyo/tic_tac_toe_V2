@@ -71,7 +71,7 @@ const intro = (() => {
                 alert('You need to pick a team');
             } else {
                 game.player1 = Game.PlayerCreator(plyChoice);
-                game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'y' : 'x');
+                game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x');
                 game.gameType = 'cpu';
                 body.innerHTML = '';
                 render.render();
@@ -105,6 +105,11 @@ const render = (() => {
             } else if (game.getBoard(i) == 'o') {
                 square.textContent = 'O';
             }
+
+            square.addEventListener('click', (e) => {
+                const index = [...e.target.parentNode.children].indexOf(e.target);
+                game.makeMove(index);
+            })
 
             canvas.appendChild(square);
         }
@@ -141,7 +146,13 @@ const game = (() => {
         return gameProperties.board[index];
     }
 
-    return { gameProperties, PlayerCreator, setupGame, getBoard }
+    const makeMove = (index) => {
+        gameProperties.board[index] = gameProperties.playerMove.team;
+        gameProperties.playerMove = (gameProperties.playerMove == gameProperties.player1) ? gameProperties.player2 : gameProperties.player1;
+        render.render();
+    }
+
+    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove }
     
 })();
 
