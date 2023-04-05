@@ -5,7 +5,7 @@ const intro = (() => {
     const body = document.querySelector('body');
 
     const gameTypeSelect = (() => {
-        const render = () => {
+        const draw = () => {
             body.innerHTML = htmlLines.gameSelection;
         
             const buttons = document.querySelectorAll('button');
@@ -22,8 +22,8 @@ const intro = (() => {
             });
         }
 
-        render();
-        return { render };
+        draw();
+        return { draw };
     })();
 
      
@@ -35,7 +35,7 @@ const intro = (() => {
             body.innerHTML = htmlLines.cpuTeamSelection;
         }
 
-        document.querySelector('.backBtn').addEventListener('click', gameTypeSelect.render);
+        document.querySelector('.backBtn').addEventListener('click', gameTypeSelect.draw);
         document.querySelector('.confirmBtn').addEventListener('click', () => { confirmGame(type) });
     }
 
@@ -60,7 +60,7 @@ const intro = (() => {
                 alert('You must pick two oppossing teams.');
             } else {
                 game.setupGame(game.PlayerCreator(ply1Choice), game.PlayerCreator(ply2Choice), type);
-                render.render();
+                render.draw();
             }
       
         } else if (type === 'cpu') {
@@ -74,7 +74,7 @@ const intro = (() => {
                 game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x');
                 game.gameType = 'cpu';
                 body.innerHTML = '';
-                render.render();
+                render.draw();
             }
         }
     };
@@ -82,7 +82,7 @@ const intro = (() => {
 })();
 
 const render = (() => {
-    const render = () => {
+    const draw = () => {
         const body = document.querySelector('body');
         body.innerHTML = '';
         const mainContainer = document.createElement('div');
@@ -118,7 +118,7 @@ const render = (() => {
     }
 
     return {
-        render
+        draw
     }
 
 })();
@@ -132,10 +132,11 @@ const game = (() => {
         gameType: null
     }
 
+    const gp = gameProperties;
+
     const PlayerCreator = team => {return {team}};
 
     const setupGame = (ply1, ply2, gameType) => {
-        const gp = gameProperties;
         gp.player1 = ply1;
         gp.player2 = ply2;
         gp.playerMove = ply1;
@@ -147,9 +148,9 @@ const game = (() => {
     }
 
     const makeMove = (index) => {
-        gameProperties.board[index] = gameProperties.playerMove.team;
-        gameProperties.playerMove = (gameProperties.playerMove == gameProperties.player1) ? gameProperties.player2 : gameProperties.player1;
-        render.render();
+        gp.board[index] = gp.playerMove.team;
+        gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+        render.draw();
     }
 
     return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove }
