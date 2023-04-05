@@ -16,8 +16,8 @@ export const htmlLines = {
                     <input type = 'radio' id = 'x' name = 'ply1GameType'></radio>
                 </div>
                 <div class ='teamField'>
-                    <div class ='teamSign'>Y</div>
-                    <input type = 'radio' id = 'y' name = 'ply1GameType'></radio>
+                    <div class ='teamSign'>O</div>
+                    <input type = 'radio' id = 'o' name = 'ply1GameType'></radio>
                 </div>
             </div>
         </div>
@@ -29,8 +29,8 @@ export const htmlLines = {
                     <input type = 'radio' id = 'x' name = 'ply2GameType'></radio>
                 </div>
                 <div class ='teamField'>
-                    <div class ='teamSign'>Y</div>
-                    <input type = 'radio' id = 'y' name = 'ply2GameType'></radio>
+                    <div class ='teamSign'>O</div>
+                    <input type = 'radio' id = 'o' name = 'ply2GameType'></radio>
                 </div>
             </div>
         </div>
@@ -47,8 +47,8 @@ export const htmlLines = {
             <input type = 'radio' id = 'x' name = 'gameType'></radio>
         </div>
         <div class ='teamField'>
-            <div class ='teamSign'>Y</div>
-            <input type = 'radio' id = 'y' name = 'gameType'></radio>
+            <div class ='teamSign'>O</div>
+            <input type = 'radio' id = 'o' name = 'gameType'></radio>
         </div>
     </div>
     <div class = 'buttonSet'>

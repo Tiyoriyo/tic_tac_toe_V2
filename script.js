@@ -59,10 +59,7 @@ const intro = (() => {
             if (!ply1Choice || !ply2Choice || ply1Choice === ply2Choice) {
                 alert('You must pick two oppossing teams.');
             } else {
-                game.player1 = game.PlayerCreator(ply1Choice);
-                game.player2 = game.PlayerCreator(ply2Choice);
-                game.gameType = 'pvp';
-                body.innerHTML = '';
+                game.setupGame(game.PlayerCreator(ply1Choice), game.PlayerCreator(ply2Choice), type);
                 render.render();
             }
       
@@ -87,6 +84,7 @@ const intro = (() => {
 const render = (() => {
     const render = () => {
         const body = document.querySelector('body');
+        body.innerHTML = '';
         const mainContainer = document.createElement('div');
         const wHeight = 500;
 
@@ -102,9 +100,9 @@ const render = (() => {
             const square = document.createElement('div');
             square.className = 'square';
 
-            if (game.board[i] == 'x') {
+            if (game.getBoard(i) == 'x') {
                 square.textContent = 'X';
-            } else if (game.board[i] == 'o') {
+            } else if (game.getBoard(i) == 'o') {
                 square.textContent = 'O';
             }
 
@@ -121,16 +119,29 @@ const render = (() => {
 })();
 
 const game = (() => {
-    const board = [null, null, null, null, null, null, null, null, null];
-    let gameType = null;
-    let player1 = null;
-    let player2 = null;
+    const gameProperties = {
+        board: [null, null, null, null, null, null, null, null, null],
+        player1: null,
+        player2: null,
+        playerMove: null,
+        gameType: null
+    }
 
     const PlayerCreator = team => {return {team}};
 
-    const setGameType = type => {gameType = type} 
+    const setupGame = (ply1, ply2, gameType) => {
+        const gp = gameProperties;
+        gp.player1 = ply1;
+        gp.player2 = ply2;
+        gp.playerMove = ply1;
+        gp.gameType = gameType;
+    }
 
-    return { board, PlayerCreator, setGameType, player1, player2, gameType }
+    const getBoard = (index) => {
+        return gameProperties.board[index];
+    }
+
+    return { gameProperties, PlayerCreator, setupGame, getBoard }
     
 })();
 
