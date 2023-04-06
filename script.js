@@ -97,29 +97,33 @@ const render = (() => {
             const index = [...e.target.parentNode.children].indexOf(e.target);
             game.makeMove(index);
         }
-
+        
         for (let i = 0; i < 9; i++) {
             const square = document.createElement('div');
             square.className = 'square';
-
+            console.log(i, game.getBoard(i))
             if (game.getBoard(i) == 'x') {
                 square.textContent = 'X';
             } else if (game.getBoard(i) == 'o') {
                 square.textContent = 'O';
             }
+            
+
 
             if (!game.gameProperties.gameOver) {
                 square.addEventListener('click', __makeMoveSquare);
             }
-
+            
             canvas.appendChild(square);
         }
-       
+        
         body.appendChild(mainContainer);
         
+
         if (game.gameProperties.gameOver) {
             body.innerHTML += htmlLines.gameOverButtons;
         }
+      
     }
 
     return {
@@ -167,25 +171,25 @@ const game = (() => {
             gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
 
             winCheck();
-            render.draw();
             
         } else if (gp.gameType == 'cpu' && gp.board[index] == null) {
 
             gp.board[index] = gp.player1.team;
             gp.player1.board.push(index);
             gp.availMoves = gp.availMoves.filter(function(e) { return e !== index} );
-
+            
             winCheck();
-            render.draw();
 
             if (gp.gameOver != true) {
+
                 const cpuIndex = gp.availMoves[Math.floor(Math.random() * gp.availMoves.length)];
     
                 gp.board[cpuIndex] = gp.player2.team;
                 gp.player2.board.push(cpuIndex);
                 gp.availMoves = gp.availMoves.filter(function(e) { return e !== cpuIndex} );
+
                 winCheck();
-                render.draw();
+    
             }
             
 
@@ -200,18 +204,35 @@ const game = (() => {
         const ply2Board = gp.player2.board;
         
         for (let i = 0; i < winCombinations.length; i++) {
-                    const trueCheckPly1 = winCombinations[i].every(element => ply1Board.includes(element));
-                    const trueCheckPly2 = winCombinations[i].every(element => ply2Board.includes(element));
 
-                
+
+            const trueCheckPly1 = winCombinations[i].every(element => ply1Board.includes(element));
+            const trueCheckPly2 = winCombinations[i].every(element => ply2Board.includes(element));
+
 
             if (trueCheckPly1) {
-                console.log('ply1 wins');
+
                 gp.gameOver = true;
+                gp.gameWinner = gp.player1;
+                render.draw();
+
             } else if (trueCheckPly2) {
-                console.log('ply2 wins!');
+                
                 gp.gameOver = true;
+                gp.gameWinner = gp.player2;
+                render.draw();
+
+            } else if (!trueCheckPly1 && !trueCheckPly2 && gp.availMoves.length == 0) {
+               
+                gp.gameOver = true;
+                gp.gameWinner = 'draw';
+                render.draw();
+
+            } else {
+                render.draw();
             }
+
+
         }
 
     }
