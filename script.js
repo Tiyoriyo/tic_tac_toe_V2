@@ -93,6 +93,7 @@ const render = (() => {
     
         mainContainer.appendChild(canvas);
         
+
         for (let i = 0; i < 9; i++) {
             const square = document.createElement('div');
             square.className = 'square';
@@ -103,10 +104,9 @@ const render = (() => {
                 square.textContent = 'O';
             }
 
-            square.addEventListener('click', (e) => {
-                const index = [...e.target.parentNode.children].indexOf(e.target);
-                game.makeMove(index);
-            })
+            if (game.gameProperties.gameOver != true) {
+                square.addEventListener('click', __makeMoveSquare);
+            }
 
             canvas.appendChild(square);
         }
@@ -114,8 +114,19 @@ const render = (() => {
         body.appendChild(mainContainer);
     }
 
+    const __makeMoveSquare = (e) => {
+        const index = [...e.target.parentNode.children].indexOf(e.target);
+        game.makeMove(index);
+    }
+
+    const removeEventListener = () => {
+        const squares = document.querySelectorAll('.square');
+        squares.forEach(square => square.removeEventListener('click', __makeMoveSquare));
+        squares.forEach(square => console.log(square));
+    }
+
     return {
-        draw, 
+        draw, removeEventListener
     }
 
 })();
@@ -127,7 +138,8 @@ const game = (() => {
         player1: null,
         player2: null,
         playerMove: null,
-        gameType: null
+        gameType: null,
+        gameOver: false
     }
 
     const winCombinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
@@ -169,9 +181,7 @@ const game = (() => {
             winCheck();
             render.draw();
             
-
             const cpuIndex = gp.availMoves[Math.floor(Math.random() * gp.availMoves.length)];
-
 
             gp.board[cpuIndex] = gp.player2.team;
             gp.player2.board.push(cpuIndex);
@@ -197,6 +207,7 @@ const game = (() => {
 
             if (trueCheckPly1) {
                 console.log('ply1 wins');
+                gp.gameOver = true;
             } else if (trueCheckPly2) {
                 console.log('ply2 wins!');
             }
