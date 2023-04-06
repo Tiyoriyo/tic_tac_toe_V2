@@ -3,29 +3,30 @@ import { htmlLines } from "./htmlLines.js";
 
 const intro = (() => {
     const body = document.querySelector('body');
-
+    
+    const gameTypeListeners = (e) => {
+        switch (e.target.className) {
+            case 'pvpBtn':
+                setNameRender('pvp');
+                break;
+            case 'cpuBtn':
+                setNameRender('cpu');
+                break;
+        }
+    }
+    
     const gameTypeSelect = () => {
-        const draw = (() => {
-            body.innerHTML = htmlLines.gameSelection;
-        
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    if (e.target.className == 'pvpBtn') {
-                        body.innerHTML = '';
-                        setNameRender('pvp');
-                    } else if (e.target.className == 'cpuBtn') {
-                        body.innerHTML = '';
-                        setNameRender('cpu');
-                    }
-                });
-            });
-        })();
+        body.innerHTML = htmlLines.gameSelection;
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {button.addEventListener('click', gameTypeListeners)});
     };
 
     gameTypeSelect();
 
     const setNameRender = (type) => {
+
+        body.innerHTML = '';
+
         if (type == 'pvp') {
             body.innerHTML = htmlLines.pvpTeamSelection;
         } else if (type == 'cpu') {
@@ -34,6 +35,7 @@ const intro = (() => {
 
         document.querySelector('.backBtn').addEventListener('click', gameTypeSelect);
         document.querySelector('.confirmBtn').addEventListener('click', () => { confirmGame(type) });
+    
     }
 
     const confirmGame = (type) => {
