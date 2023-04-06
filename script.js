@@ -3,6 +3,7 @@ import { htmlLines } from "./htmlLines.js";
 
 const intro = (() => {
     const body = document.querySelector('body');
+    let _gameType;
     
     const gameTypeListeners = (e) => {
         switch (e.target.className) {
@@ -14,7 +15,7 @@ const intro = (() => {
                 break;
         }
     }
-    
+
     const gameTypeSelect = () => {
         body.innerHTML = htmlLines.gameSelection;
         const buttons = document.querySelectorAll('button');
@@ -24,54 +25,63 @@ const intro = (() => {
     gameTypeSelect();
 
     const setNameRender = (type) => {
-
         body.innerHTML = '';
-
-        if (type == 'pvp') {
-            body.innerHTML = htmlLines.pvpTeamSelection;
-        } else if (type == 'cpu') {
-            body.innerHTML = htmlLines.cpuTeamSelection;
+        switch (type) {
+            case 'pvp':
+                _gameType = 'pvp';
+                body.innerHTML = htmlLines.pvpTeamSelection;
+                break;
+            case 'cpu':
+                _gameType = 'cpu';
+                body.innerHTML = htmlLines.cpuTeamSelection;
+                break;
         }
-
         document.querySelector('.backBtn').addEventListener('click', gameTypeSelect);
-        document.querySelector('.confirmBtn').addEventListener('click', () => { confirmGame(type) });
-    
+        document.querySelector('.confirmBtn').addEventListener('click', confirmGame);
     }
 
-    const confirmGame = (type) => {
-        if (type === 'pvp') {
-            const ply1ChoiceList = document.getElementsByName('ply1GameType');
-            const ply2ChoiceList = document.getElementsByName('ply2GameType');
-            let ply1Choice;
-            let ply2Choice;
-      
-            for (let i = 0; i < ply1ChoiceList.length; i++) {
-                if (ply1ChoiceList[i].checked) {
-                    ply1Choice = ply1ChoiceList[i].id;
-                }
-      
-                if (ply2ChoiceList[i].checked) {
-                    ply2Choice = ply2ChoiceList[i].id;
-                }
+    const confirmGame = () => {
+        function getPlayerChoiceList(num) {
+            switch (_gameType) {
+                case 'pvp':
+                    return document.getElementsByName(`ply${num}GameType`);
+                case 'cpu':
+                    return document.getElementsByName('gameType');
             }
-      
-            if (!ply1Choice || !ply2Choice || ply1Choice === ply2Choice) {
-                alert('You must pick two oppossing teams.');
-            } else {
-                game.setupGame(game.PlayerCreator(ply1Choice), game.PlayerCreator(ply2Choice), type);
-                render.draw();
-            }
-      
-        } else if (type === 'cpu') {
-            const plyChoiceList = document.getElementsByName('gameType');
-            const plyChoice = [...plyChoiceList].find((element) => element.checked)?.id;
-            
-            if (!plyChoice) {
-                alert('You need to pick a team');
-            } else {
-                game.setupGame(game.PlayerCreator(plyChoice), game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x'), type);
-                render.draw();
-            }
+        }
+
+        function startGame(ply1, ply2) {
+            game.setupGame(ply1, ply2, _gameType);
+            render.draw();
+        }
+
+        switch (_gameType) {
+            case 'pvp': 
+                const ply1ChoiceList = getPlayerChoiceList(1);
+                const ply2ChoiceList = getPlayerChoiceList(2);
+
+                let { id: ply1Choice} = [...ply1ChoiceList].find(choice => choice.checked);
+                let { id: ply2Choice} = [...ply2ChoiceList].find(choice => choice.checked);
+
+                if (!ply1Choice || !ply2Choice || ply1Choice === ply2Choice) { return alert('You must pick two oppossing teams.')};
+
+                const pvpPlayer1 = game.PlayerCreator(ply1Choice); 
+                const pvpPlayer2 = game.PlayerCreator(ply2Choice);
+                startGame(pvpPlayer1, pvpPlayer2);
+                
+                break;
+
+            case 'cpu': 
+                const plyChoiceList = getPlayerChoiceList();
+                let { id: plyChoice} = [...plyChoiceList].find(choice => choice.checked);
+
+                if (!plyChoice) { return alert('You need to pick a team')}
+
+                const cpuPlayer1 = game.PlayerCreator(plyChoice);
+                const cpuPlayer2 = game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x');
+                startGame(cpuPlayer1, cpuPlayer2, _gameType);
+
+                break;
         }
     };
 
