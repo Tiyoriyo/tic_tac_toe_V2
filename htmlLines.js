@@ -54,5 +54,10 @@ export const htmlLines = {
     <div class = 'buttonSet'>
         <button class = 'backBtn'>Back</button>
         <button class = 'confirmBtn'>Confirm</button>
-    </div>`
+    </div>`,
+    gameOverButtons: `
+    <div class = 'buttonSet'>
+        <button class = 'rematchBtn'>Rematch</button>
+        <button class = 'startOverBtn'>Start Over</button>
+    </div>`,
 };

@@ -79,8 +79,8 @@ const intro = (() => {
 })();
 
 const render = (() => {
+    const body = document.querySelector('body');
     const draw = () => {
-        const body = document.querySelector('body');
         body.innerHTML = '';
         const mainContainer = document.createElement('div');
         const wHeight = 500;
@@ -93,6 +93,10 @@ const render = (() => {
     
         mainContainer.appendChild(canvas);
         
+        const __makeMoveSquare = (e) => {
+            const index = [...e.target.parentNode.children].indexOf(e.target);
+            game.makeMove(index);
+        }
 
         for (let i = 0; i < 9; i++) {
             const square = document.createElement('div');
@@ -104,7 +108,7 @@ const render = (() => {
                 square.textContent = 'O';
             }
 
-            if (game.gameProperties.gameOver != true) {
+            if (!game.gameProperties.gameOver) {
                 square.addEventListener('click', __makeMoveSquare);
             }
 
@@ -112,17 +116,10 @@ const render = (() => {
         }
        
         body.appendChild(mainContainer);
-    }
-
-    const __makeMoveSquare = (e) => {
-        const index = [...e.target.parentNode.children].indexOf(e.target);
-        game.makeMove(index);
-    }
-
-    const removeEventListener = () => {
-        const squares = document.querySelectorAll('.square');
-        squares.forEach(square => square.removeEventListener('click', __makeMoveSquare));
-        squares.forEach(square => console.log(square));
+        
+        if (game.gameProperties.gameOver) {
+            body.innerHTML += htmlLines.gameOverButtons;
+        }
     }
 
     return {
