@@ -123,6 +123,7 @@ const render = (() => {
 const game = (() => {
     const gameProperties = {
         board: [null, null, null, null, null, null, null, null, null],
+        availMoves: [0, 1, 2, 3, 4, 5, 6, 7, 8],
         player1: null,
         player2: null,
         playerMove: null,
@@ -149,35 +150,34 @@ const game = (() => {
     }
 
     const makeMove = (index) => {
-        
+
         if (gp.gameType == 'pvp' && gp.board[index] == null) {
 
             gp.board[index] = gp.playerMove.team;
             gp.playerMove.board.push(index);
+            gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+
             winCheck();
-            gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+            render.draw();
+            
+        } else if (gp.gameType == 'cpu' && gp.board[index] == null) {
+
+            gp.board[index] = gp.player1.team;
+            gp.player1.board.push(index);
+            gp.availMoves = gp.availMoves.filter(function(e) { return e !== index} );
+
+            winCheck();
             render.draw();
             
 
-        } else if (gp.gameType == 'cpu') {
+            const cpuIndex = gp.availMoves[Math.floor(Math.random() * gp.availMoves.length)];
 
-            gp.board[index] = gp.playerMove.team;
-            gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+
+            gp.board[cpuIndex] = gp.player2.team;
+            gp.player2.board.push(cpuIndex);
+            gp.availMoves = gp.availMoves.filter(function(e) { return e !== cpuIndex} );
+            winCheck();
             render.draw();
-            
-
-            while (true) {
-                const cpuIndex = Math.floor(Math.random() * 9);
-
-                if (gp.board[cpuIndex] == null) {
-                    gp.board[cpuIndex] = gp.playerMove.team;
-                    gp.playerMove = gp.player1; 
-                    render.draw();
-                    console.log('yes')
-                    break;
-                } 
-
-            }
 
         }
 
