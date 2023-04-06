@@ -213,6 +213,7 @@ const game = (() => {
                 gp.gameOver = true;
             } else if (trueCheckPly2) {
                 console.log('ply2 wins!');
+                gp.gameOver = true;
             }
         }
 
