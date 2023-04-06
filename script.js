@@ -70,10 +70,7 @@ const intro = (() => {
             if (!plyChoice) {
                 alert('You need to pick a team');
             } else {
-                game.player1 = Game.PlayerCreator(plyChoice);
-                game.player2 = Game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x');
-                game.gameType = 'cpu';
-                body.innerHTML = '';
+                game.setupGame(game.PlayerCreator(plyChoice), game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x'), type);
                 render.draw();
             }
         }
@@ -118,7 +115,7 @@ const render = (() => {
     }
 
     return {
-        draw
+        draw, 
     }
 
 })();
@@ -136,7 +133,9 @@ const game = (() => {
 
     const gp = gameProperties;
 
-    const PlayerCreator = team => {return {team}};
+    const PlayerCreator = team => {return {
+        team, board: []
+    }};
 
     const setupGame = (ply1, ply2, gameType) => {
         gp.player1 = ply1;
@@ -150,9 +149,59 @@ const game = (() => {
     }
 
     const makeMove = (index) => {
-        gp.board[index] = gp.playerMove.team;
-        gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
-        render.draw();
+        
+        if (gp.gameType == 'pvp' && gp.board[index] == null) {
+
+            gp.board[index] = gp.playerMove.team;
+            gp.playerMove.board.push(index);
+            winCheck();
+            gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+            render.draw();
+            
+
+        } else if (gp.gameType == 'cpu') {
+
+            gp.board[index] = gp.playerMove.team;
+            gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+            render.draw();
+            
+
+            while (true) {
+                const cpuIndex = Math.floor(Math.random() * 9);
+
+                if (gp.board[cpuIndex] == null) {
+                    gp.board[cpuIndex] = gp.playerMove.team;
+                    gp.playerMove = gp.player1; 
+                    render.draw();
+                    console.log('yes')
+                    break;
+                } 
+
+            }
+
+        }
+
+        
+    }
+
+    const winCheck = () => {
+
+        const ply1Board = gp.player1.board;
+        const ply2Board = gp.player2.board;
+        
+        for (let i = 0; i < winCombinations.length; i++) {
+                    const trueCheckPly1 = winCombinations[i].every(element => ply1Board.includes(element));
+                    const trueCheckPly2 = winCombinations[i].every(element => ply2Board.includes(element));
+
+                
+
+            if (trueCheckPly1) {
+                console.log('ply1 wins');
+            } else if (trueCheckPly2) {
+                console.log('ply2 wins!');
+            }
+        }
+
     }
 
     return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove }
