@@ -4,8 +4,8 @@ import { htmlLines } from "./htmlLines.js";
 const intro = (() => {
     const body = document.querySelector('body');
 
-    const gameTypeSelect = (() => {
-        const draw = () => {
+    const gameTypeSelect = () => {
+        const draw = (() => {
             body.innerHTML = htmlLines.gameSelection;
         
             const buttons = document.querySelectorAll('button');
@@ -20,13 +20,10 @@ const intro = (() => {
                     }
                 });
             });
-        }
+        })();
+    };
 
-        draw();
-        return { draw };
-    })();
-
-     
+    gameTypeSelect();
 
     const setNameRender = (type) => {
         if (type == 'pvp') {
@@ -35,7 +32,7 @@ const intro = (() => {
             body.innerHTML = htmlLines.cpuTeamSelection;
         }
 
-        document.querySelector('.backBtn').addEventListener('click', gameTypeSelect.draw);
+        document.querySelector('.backBtn').addEventListener('click', gameTypeSelect);
         document.querySelector('.confirmBtn').addEventListener('click', () => { confirmGame(type) });
     }
 
@@ -75,6 +72,10 @@ const intro = (() => {
             }
         }
     };
+
+    return {
+        gameTypeSelect,
+    }
 
 })();
 
@@ -124,9 +125,17 @@ const render = (() => {
             body.innerHTML += htmlLines.gameOverButtons;
 
             const rematchBtn = document.querySelector('.rematchBtn');
-            const startOverBtn = document.querySelector('startOverButton');
+            const startOverBtn = document.querySelector('.startOverBtn');
 
-            rematchBtn.addEventListener('click', game.restartGame);
+            rematchBtn.addEventListener('click', () => {
+                game.reset();
+                draw();
+            });
+
+            startOverBtn.addEventListener('click', () => {
+                game.reset();
+                intro.gameTypeSelect();
+            });
         }
       
     }
@@ -164,7 +173,7 @@ const game = (() => {
         gp.gameType = gameType;
     }
 
-    const restartGame = () => {
+    const reset = () => {
         gp.board = [null, null, null, null, null, null, null, null, null];
         gp.availMoves = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         gp.player1.board = [];
@@ -172,7 +181,6 @@ const game = (() => {
         gp.playerMove = gp.player1;
         gp.gameOver = false;
         gp.winningPlayer = null;
-        render.draw();
     }
 
     const getBoard = (index) => {
@@ -254,7 +262,7 @@ const game = (() => {
 
     }
 
-    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove, restartGame }
+    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove, reset }
     
 })();
 
