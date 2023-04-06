@@ -99,22 +99,22 @@ const render = (() => {
         }
         
         for (let i = 0; i < 9; i++) {
+
             const square = document.createElement('div');
             square.className = 'square';
-            console.log(i, game.getBoard(i))
+
             if (game.getBoard(i) == 'x') {
                 square.textContent = 'X';
             } else if (game.getBoard(i) == 'o') {
                 square.textContent = 'O';
             }
-            
-
 
             if (!game.gameProperties.gameOver) {
                 square.addEventListener('click', __makeMoveSquare);
             }
             
             canvas.appendChild(square);
+
         }
         
         body.appendChild(mainContainer);
@@ -122,6 +122,11 @@ const render = (() => {
 
         if (game.gameProperties.gameOver) {
             body.innerHTML += htmlLines.gameOverButtons;
+
+            const rematchBtn = document.querySelector('.rematchBtn');
+            const startOverBtn = document.querySelector('startOverButton');
+
+            rematchBtn.addEventListener('click', game.restartGame);
         }
       
     }
@@ -140,7 +145,8 @@ const game = (() => {
         player2: null,
         playerMove: null,
         gameType: null,
-        gameOver: false
+        gameOver: false,
+        winningPlayer: null
     }
 
     const winCombinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
@@ -156,6 +162,17 @@ const game = (() => {
         gp.player2 = ply2;
         gp.playerMove = ply1;
         gp.gameType = gameType;
+    }
+
+    const restartGame = () => {
+        gp.board = [null, null, null, null, null, null, null, null, null];
+        gp.availMoves = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        gp.player1.board = [];
+        gp.player2.board = [];
+        gp.playerMove = gp.player1;
+        gp.gameOver = false;
+        gp.winningPlayer = null;
+        render.draw();
     }
 
     const getBoard = (index) => {
@@ -237,7 +254,7 @@ const game = (() => {
 
     }
 
-    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove }
+    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove, restartGame }
     
 })();
 
