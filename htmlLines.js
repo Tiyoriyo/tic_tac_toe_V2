@@ -67,7 +67,7 @@ export const htmlLines = {
     </div>`,
     gameRunCpuButtons: `
     <div class = 'buttonSet'>
-        <button class = 'ply1ForfeitBtn'>Forfeit</button>
+        <button class = 'forfeitBtn'>Forfeit</button>
     </div>`,
 
 };

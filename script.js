@@ -167,6 +167,14 @@ const render = (() => {
 
             body.insertAdjacentHTML('beforeend', htmlLines.gameRunCpuButtons);
 
+            const forfeit = document.querySelector('.forfeitBtn');
+
+            forfeit.addEventListener('click', () => {
+                game.gameProperties.winningPlayer = game.gameProperties.player2;
+                game.gameProperties.gameOver = true;
+                game.fillSquares();
+            })
+
         };
       
     }
