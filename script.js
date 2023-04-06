@@ -180,14 +180,17 @@ const game = (() => {
 
             winCheck();
             render.draw();
-            
-            const cpuIndex = gp.availMoves[Math.floor(Math.random() * gp.availMoves.length)];
 
-            gp.board[cpuIndex] = gp.player2.team;
-            gp.player2.board.push(cpuIndex);
-            gp.availMoves = gp.availMoves.filter(function(e) { return e !== cpuIndex} );
-            winCheck();
-            render.draw();
+            if (gp.gameOver != true) {
+                const cpuIndex = gp.availMoves[Math.floor(Math.random() * gp.availMoves.length)];
+    
+                gp.board[cpuIndex] = gp.player2.team;
+                gp.player2.board.push(cpuIndex);
+                gp.availMoves = gp.availMoves.filter(function(e) { return e !== cpuIndex} );
+                winCheck();
+                render.draw();
+            }
+            
 
         }
 
