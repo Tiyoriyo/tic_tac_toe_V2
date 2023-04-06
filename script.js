@@ -94,10 +94,7 @@ const render = (() => {
     
         mainContainer.appendChild(canvas);
         
-        const __makeMoveSquare = (e) => {
-            const index = [...e.target.parentNode.children].indexOf(e.target);
-            game.makeMove(index);
-        }
+        
         
         for (let i = 0; i < 9; i++) {
 
@@ -111,18 +108,22 @@ const render = (() => {
             }
 
             if (!game.gameProperties.gameOver) {
-                square.addEventListener('click', __makeMoveSquare);
+                square.addEventListener('click', (e) => {
+                    const index = [...e.target.parentNode.children].indexOf(e.target);
+                    game.makeMove(index);
+                }); 
             }
             
             canvas.appendChild(square);
 
         }
+
         
         body.appendChild(mainContainer);
         
-
-        if (game.gameProperties.gameOver) {
-            body.innerHTML += htmlLines.gameOverButtons;
+    
+        const gameOverButtons = () => {
+            body.insertAdjacentHTML('beforeend', htmlLines.gameOverButtons);
 
             const rematchBtn = document.querySelector('.rematchBtn');
             const startOverBtn = document.querySelector('.startOverBtn');
@@ -137,11 +138,41 @@ const render = (() => {
                 intro.gameTypeSelect();
             });
         }
+
+
+        if (game.gameProperties.gameOver) {
+
+            gameOverButtons();
+
+        } else if (!game.gameProperties.gameOver && game.gameProperties.gameType == 'pvp') {
+
+            body.insertAdjacentHTML('beforeend', htmlLines.gameRunPvpButtons);
+
+            const ply1Forfeit = document.querySelector('.ply1ForfeitBtn');
+            const ply2Forfeit = document.querySelector('.ply2ForfeitBtn');
+
+            ply1Forfeit.addEventListener('click', () => {
+                game.gameProperties.winningPlayer = game.gameProperties.player2;
+                game.gameProperties.gameOver = true;
+                game.fillSquares();
+            });
+
+            ply2Forfeit.addEventListener('click', () => {
+                game.gameProperties.winningPlayer = game.gameProperties.player1;
+                game.gameProperties.gameOver = true;
+                game.fillSquares();
+            });
+
+        } else if (!game.gameProperties.gameOver && game.gameProperties.gameType == 'cpu') {
+
+            body.insertAdjacentHTML('beforeend', htmlLines.gameRunCpuButtons);
+
+        };
       
     }
 
     return {
-        draw, removeEventListener
+        draw
     }
 
 })();
@@ -183,6 +214,15 @@ const game = (() => {
         gp.winningPlayer = null;
     }
 
+    const fillSquares = () => {
+        for (let i = 0; i < gp.board.length; i++) {
+            if (gp.board[i] == null) {
+                gp.board[i] = gp.winningPlayer.team;
+            }
+        }
+        render.draw();
+    }
+
     const getBoard = (index) => {
         return gameProperties.board[index];
     }
@@ -198,7 +238,6 @@ const game = (() => {
             winCheck();
             
         } else if (gp.gameType == 'cpu' && gp.board[index] == null) {
-
             gp.board[index] = gp.player1.team;
             gp.player1.board.push(index);
             gp.availMoves = gp.availMoves.filter(function(e) { return e !== index} );
@@ -262,7 +301,7 @@ const game = (() => {
 
     }
 
-    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove, reset }
+    return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove, reset, fillSquares }
     
 })();
 

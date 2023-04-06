@@ -60,4 +60,14 @@ export const htmlLines = {
         <button class = 'rematchBtn'>Rematch</button>
         <button class = 'startOverBtn'>Start Over</button>
     </div>`,
+    gameRunPvpButtons: `
+    <div class = 'buttonSet'>
+        <button class = 'ply1ForfeitBtn'>Player 1 Forfeit</button>
+        <button class = 'ply2ForfeitBtn'>Player 2 Forfeit</button>
+    </div>`,
+    gameRunCpuButtons: `
+    <div class = 'buttonSet'>
+        <button class = 'ply1ForfeitBtn'>Forfeit</button>
+    </div>`,
+
 };
