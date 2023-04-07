@@ -206,7 +206,7 @@ const render = (() => {
             _forfeitButtons();
         }
     }
-    
+
     return {
         draw
     }
@@ -222,12 +222,11 @@ const game = (() => {
         playerMove: null,
         gameType: null,
         gameOver: false,
-        winningPlayer: null
+        winningPlayer: null,
+        winCombinations: [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]],
     }
 
     const gp = gameProperties;
-
-    const winCombinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
     const PlayerCreator = team => {return {
         team, board: []
@@ -303,11 +302,11 @@ const game = (() => {
         const ply1Board = gp.player1.board;
         const ply2Board = gp.player2.board;
         
-        for (let i = 0; i < winCombinations.length; i++) {
+        for (let i = 0; i < gp.winCombinations.length; i++) {
 
 
-            const trueCheckPly1 = winCombinations[i].every(element => ply1Board.includes(element));
-            const trueCheckPly2 = winCombinations[i].every(element => ply2Board.includes(element));
+            const trueCheckPly1 = gp.winCombinations[i].every(element => ply1Board.includes(element));
+            const trueCheckPly2 = gp.winCombinations[i].every(element => ply2Board.includes(element));
 
 
             if (trueCheckPly1) {
