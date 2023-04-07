@@ -228,9 +228,7 @@ const game = (() => {
 
     const gp = gameProperties;
 
-    const PlayerCreator = team => {return {
-        team, board: []
-    }};
+    const PlayerCreator = team => {return { team, board: []}};
 
     const setupGame = (ply1, ply2, gameType) => {
         gp.player1 = ply1;
