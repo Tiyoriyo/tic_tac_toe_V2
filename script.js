@@ -55,30 +55,33 @@ const intro = (() => {
             render.draw();
         }
 
+      
+
         switch (_gameType) {
             case 'pvp': 
                 const ply1ChoiceList = getPlayerChoiceList(1);
                 const ply2ChoiceList = getPlayerChoiceList(2);
 
-                let { id: ply1Choice} = [...ply1ChoiceList].find(choice => choice.checked);
-                let { id: ply2Choice} = [...ply2ChoiceList].find(choice => choice.checked);
+                let ply1ChoiceDom = [...ply1ChoiceList].find((choice) => {return choice.checked ? choice.id : false});
+                let ply2ChoiceDom = [...ply2ChoiceList].find((choice) => {return choice.checked ? choice.id : false});
+            
+                if (!ply1ChoiceDom || !ply2ChoiceDom || ply1ChoiceDom === ply2ChoiceDom) { return alert('You must pick two oppossing teams.')};
 
-                if (!ply1Choice || !ply2Choice || ply1Choice === ply2Choice) { return alert('You must pick two oppossing teams.')};
-
-                const pvpPlayer1 = game.PlayerCreator(ply1Choice); 
-                const pvpPlayer2 = game.PlayerCreator(ply2Choice);
+                const pvpPlayer1 = game.PlayerCreator(ply1ChoiceDom.id); 
+                const pvpPlayer2 = game.PlayerCreator(ply2ChoiceDom.id);
                 startGame(pvpPlayer1, pvpPlayer2);
                 
                 break;
 
             case 'cpu': 
                 const plyChoiceList = getPlayerChoiceList();
-                let { id: plyChoice} = [...plyChoiceList].find(choice => choice.checked);
 
-                if (!plyChoice) { return alert('You need to pick a team')}
+                let plyChoiceDom = [...plyChoiceList].find((choice) => {return choice.checked ? choice.checked : false});
 
-                const cpuPlayer1 = game.PlayerCreator(plyChoice);
-                const cpuPlayer2 = game.PlayerCreator(plyChoice === 'x' ? 'o' : 'x');
+                if (!plyChoiceDom) { return alert('You need to pick a team')}
+
+                const cpuPlayer1 = game.PlayerCreator(plyChoiceDom.id);
+                const cpuPlayer2 = game.PlayerCreator(plyChoiceDom.id === 'x' ? 'o' : 'x');
                 startGame(cpuPlayer1, cpuPlayer2, _gameType);
 
                 break;
@@ -91,31 +94,20 @@ const intro = (() => {
 
 const render = (() => {
     const body = document.querySelector('body');
-    const draw = () => {
-        body.innerHTML = '';
-        const mainContainer = document.createElement('div');
-        const wHeight = 500;
 
-        mainContainer.className = 'mainContainer';
-        mainContainer.style = `width: ${wHeight}px; height: ${wHeight}px`
-    
-        const canvas = document.createElement('div');
-        canvas.className = 'canvas';
-    
-        mainContainer.appendChild(canvas);
-        
-        
-        
-        for (let i = 0; i < 9; i++) {
-
+    const _createCanvasSquares = (canvas) => {
+        for (let i = 0; i < game.gameProperties.board.length; i++) {
             const square = document.createElement('div');
             square.className = 'square';
 
-            if (game.getBoard(i) == 'x') {
-                square.textContent = 'X';
-            } else if (game.getBoard(i) == 'o') {
-                square.textContent = 'O';
-            }
+            switch (game.getBoard(i)) {
+                case 'x':
+                    square.textContent = 'X';
+                    break;
+                case 'o':
+                    square.textContent = 'O';
+                    break;
+            }   
 
             if (!game.gameProperties.gameOver) {
                 square.addEventListener('click', (e) => {
@@ -123,72 +115,98 @@ const render = (() => {
                     game.makeMove(index);
                 }); 
             }
-            
-            canvas.appendChild(square);
 
+            canvas.appendChild(square);   
         }
-
-        
-        body.appendChild(mainContainer);
-        
+    }
     
-        const gameOverButtons = () => {
-            body.insertAdjacentHTML('beforeend', htmlLines.gameOverButtons);
+    const _gameOverButtons = () => {
+        body.insertAdjacentHTML('beforeend', htmlLines.gameOverButtons);
 
-            const rematchBtn = document.querySelector('.rematchBtn');
-            const startOverBtn = document.querySelector('.startOverBtn');
+        const rematchBtn = document.querySelector('.rematchBtn');
+        const startOverBtn = document.querySelector('.startOverBtn');
 
-            rematchBtn.addEventListener('click', () => {
-                game.reset();
-                draw();
-            });
-
-            startOverBtn.addEventListener('click', () => {
-                game.reset();
-                intro.gameTypeSelect();
-            });
-        }
-
-
-        if (game.gameProperties.gameOver) {
-
-            gameOverButtons();
-
-        } else if (!game.gameProperties.gameOver && game.gameProperties.gameType == 'pvp') {
-
-            body.insertAdjacentHTML('beforeend', htmlLines.gameRunPvpButtons);
-
-            const ply1Forfeit = document.querySelector('.ply1ForfeitBtn');
-            const ply2Forfeit = document.querySelector('.ply2ForfeitBtn');
-
-            ply1Forfeit.addEventListener('click', () => {
-                game.gameProperties.winningPlayer = game.gameProperties.player2;
-                game.gameProperties.gameOver = true;
-                game.fillSquares();
-            });
-
-            ply2Forfeit.addEventListener('click', () => {
-                game.gameProperties.winningPlayer = game.gameProperties.player1;
-                game.gameProperties.gameOver = true;
-                game.fillSquares();
-            });
-
-        } else if (!game.gameProperties.gameOver && game.gameProperties.gameType == 'cpu') {
-
-            body.insertAdjacentHTML('beforeend', htmlLines.gameRunCpuButtons);
-
-            const forfeit = document.querySelector('.forfeitBtn');
-
-            forfeit.addEventListener('click', () => {
-                game.gameProperties.winningPlayer = game.gameProperties.player2;
-                game.gameProperties.gameOver = true;
-                game.fillSquares();
-            })
-
-        };
-      
+        rematchBtn.addEventListener('click', _gameOverButtonEventListener.rematch);
+        startOverBtn.addEventListener('click', _gameOverButtonEventListener.startOver);
     }
 
+    const _gameOverButtonEventListener = (() => {
+        return {
+            rematch: function() {
+                game.reset();
+                draw();
+            },
+            startOver: function() {
+                game.reset();
+                intro.gameTypeSelect();
+            }
+        }
+    })();
+
+    const _forfeitButtons = () => {
+
+        switch (game.gameProperties.gameType) {
+            case 'pvp':
+                body.insertAdjacentHTML('beforeend', htmlLines.gameRunPvpButtons);
+
+                const ply1Forfeit = document.querySelector('.ply1ForfeitBtn');
+                const ply2Forfeit = document.querySelector('.ply2ForfeitBtn');
+                ply1Forfeit.addEventListener('click', _forfeitEventListener);
+                ply2Forfeit.addEventListener('click', _forfeitEventListener);
+                break;
+            case 'cpu': 
+                body.insertAdjacentHTML('beforeend', htmlLines.gameRunCpuButtons);
+
+                const forfeit = document.querySelector('.forfeitBtn');
+                forfeit.addEventListener('click', _forfeitEventListener)
+                break;
+        }
+
+    }
+
+    function _forfeitEventListener(e) {
+        switch (game.gameProperties.gameType) {
+            case 'pvp':
+                switch (e.target.className) {
+                    case 'ply1ForfeitBtn':
+                        game.gameProperties.winningPlayer = game.gameProperties.player2;
+                        game.gameProperties.gameOver = true;
+                        game.fillSquares();
+                        break;
+                    case 'ply2ForfeitBtn':
+                        game.gameProperties.winningPlayer = game.gameProperties.player1;
+                        game.gameProperties.gameOver = true;
+                        game.fillSquares();
+                        break;
+                };
+                break;
+            case 'cpu':
+                game.gameProperties.winningPlayer = game.gameProperties.player2;
+                game.gameProperties.gameOver = true;
+                game.fillSquares();
+                break;
+        }    
+    }
+
+    const draw = () => {
+        body.innerHTML = '';
+        const mainContainer = document.createElement('div');
+        const canvas = document.createElement('div');
+
+        mainContainer.className = 'mainContainer';
+        canvas.className = 'canvas';
+
+        mainContainer.appendChild(canvas);
+        body.appendChild(mainContainer);
+        _createCanvasSquares(canvas);
+        
+        if (game.gameProperties.gameOver) {
+            _gameOverButtons();
+        } else {
+            _forfeitButtons();
+        }
+    }
+    
     return {
         draw
     }
@@ -207,9 +225,9 @@ const game = (() => {
         winningPlayer: null
     }
 
-    const winCombinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-
     const gp = gameProperties;
+
+    const winCombinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
     const PlayerCreator = team => {return {
         team, board: []
