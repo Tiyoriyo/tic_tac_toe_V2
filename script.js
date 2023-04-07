@@ -231,9 +231,9 @@ const game = (() => {
     const PlayerCreator = team => {return { team, board: []}};
 
     const setupGame = (ply1, ply2, gameType) => {
-        gp.player1 = ply1;
+        gp.player1 = ply1; 
         gp.player2 = ply2;
-        gp.playerMove = ply1;
+        gp.playerMove = ply1; 
         gp.gameType = gameType;
     }
 
@@ -248,14 +248,12 @@ const game = (() => {
     }
 
     const fillSquares = () => {
-        for (let i = 0; i < gp.board.length; i++) {
-            if (gp.board[i] == null) {
-                gp.board[i] = gp.winningPlayer.team;
-            }
-        }
+       
+
+        gp.board = gp.board.map(item => item = gp.winningPlayer.team);
         render.draw();
     }
-
+    
     const getBoard = (index) => {
         return gameProperties.board[index];
     }
