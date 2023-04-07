@@ -85,9 +85,7 @@ const intro = (() => {
         }
     };
 
-    return {
-        gameTypeSelect,
-    }
+    return { gameTypeSelect}
 
 })();
 
