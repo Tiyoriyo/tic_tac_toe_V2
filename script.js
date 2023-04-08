@@ -219,14 +219,13 @@ const render = (() => {
 const game = (() => {
     const gameProperties = {
         board: [null, null, null, null, null, null, null, null, null],
-        availMoves: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        winCombinations: [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]],
         player1: null,
         player2: null,
         playerMove: null,
         gameType: null,
         gameOver: false,
         winningPlayer: null,
-        winCombinations: [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]],
     }
 
     const gp = gameProperties;
@@ -259,58 +258,59 @@ const game = (() => {
     const getBoard = (index) => {
         return gameProperties.board[index];
     }
-
-    function _fillBoardPosition(index) {
-        switch (gp.gameType) {
-            case 'pvp':
-
-                if (gp.board[index]) { return};
-                gp.board[index] = gp.playerMove.team; // Set board square to player team
-                gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1; // Switch moving player
-                _winCheck(); // Check if Win
-                break;
-
-            case 'cpu':
-
-                if (gp.board[index]) { return };
-                gp.board[index] = gp.player1.team; // Set board square to Player1 team
-                _winCheck(); // Check if Win
-                _fillBoardPositionCpu(); // Cpu Move
-                break;
-        }
-    }
-
-    function _fillBoardPositionCpu() {
-        if (gp.gameOver) { return }
+    
+    const makeMove = (index) => {
         
-        function _getRandomBoardIndex() { // Gets a Random index based on the GameBoard length
-            const index = Math.floor(Math.random() * gp.board.length);
-            return index;
-        }
-
-        function _checkRandomBoardIndex(index) { // Checks if index returns a board square that is available, if not find new index
-            for (let i = 0; i < Infinity; i++) {
-                if (!gp.board[index]) {
-                    return index;
-                } else {
-                    index = _getRandomBoardIndex();
-                }
+        function _fillBoardPosition(index) {
+            switch (gp.gameType) {
+                case 'pvp':
+    
+                    if (gp.board[index]) { return};
+                    gp.board[index] = gp.playerMove.team; // Set board square to player team
+                    gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1; // Switch moving player
+                    _winCheck(); // Check if Win
+                    break;
+    
+                case 'cpu':
+    
+                    if (gp.board[index]) { return };
+                    gp.board[index] = gp.player1.team; // Set board square to Player1 team
+                    _winCheck(); // Check if Win
+                    _fillBoardPositionCpu(); // Cpu Move
+                    break;
             }
         }
-
-        function _getBoardIndex() { // Returns a index that has an empty board square
-            let randomIndex = _getRandomBoardIndex();
-            let checkedIndex = _checkRandomBoardIndex(randomIndex);
-
-            return checkedIndex;
+    
+        function _fillBoardPositionCpu() {
+        if (gp.gameOver) { return }
+        
+            function _getRandomBoardIndex() { // Gets a Random index based on the GameBoard length
+                const index = Math.floor(Math.random() * gp.board.length);
+                return index;
+            }
+    
+            function _checkRandomBoardIndex(index) { // Checks if index returns a board square that is available, if not find new index
+                for (let i = 0; i < Infinity; i++) {
+                    if (!gp.board[index]) {
+                        return index;
+                    } else {
+                        index = _getRandomBoardIndex();
+                    }
+                }
+            }
+    
+            function _getBoardIndex() { // Returns a index that has an empty board square
+                let randomIndex = _getRandomBoardIndex();
+                let checkedIndex = _checkRandomBoardIndex(randomIndex);
+    
+                return checkedIndex;
+            }
+    
+            let cpuIndex = _getBoardIndex();
+            gp.board[cpuIndex] = gp.player2.team;
+            _winCheck();
         }
 
-        let cpuIndex = _getBoardIndex();
-        gp.board[cpuIndex] = gp.player2.team;
-        _winCheck();
-    }
-
-    const makeMove = (index) => {
         _fillBoardPosition(index);
     }
 
@@ -393,19 +393,16 @@ const game = (() => {
             case 'player1':
                 setGameProperties('player1');
                 render.draw();
-                console.log('ply1');
                 break;
 
             case 'player2': 
                 setGameProperties('player2');
                 render.draw();
-                console.log('ply2');
                 break;
 
             case 'draw':
                 setGameProperties('draw');
                 render.draw();
-                console.log('draw');
                 break;
 
             case false:
