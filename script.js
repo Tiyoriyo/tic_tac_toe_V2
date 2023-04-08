@@ -172,11 +172,13 @@ const render = (() => {
                         game.gameProperties.winningPlayer = game.gameProperties.player2;
                         game.gameProperties.gameOver = true;
                         game.fillSquares();
+                        draw();
                         break;
                     case 'ply2ForfeitBtn':
                         game.gameProperties.winningPlayer = game.gameProperties.player1;
                         game.gameProperties.gameOver = true;
                         game.fillSquares();
+                        draw();
                         break;
                 };
                 break;
@@ -184,6 +186,7 @@ const render = (() => {
                 game.gameProperties.winningPlayer = game.gameProperties.player2;
                 game.gameProperties.gameOver = true;
                 game.fillSquares();
+                draw();
                 break;
         }    
     }
@@ -228,7 +231,7 @@ const game = (() => {
 
     const gp = gameProperties;
 
-    const PlayerCreator = team => {return { team, board: []}};
+    const PlayerCreator = team => {return { team}};
 
     const setupGame = (ply1, ply2, gameType) => {
         gp.player1 = ply1; 
@@ -240,96 +243,175 @@ const game = (() => {
     const reset = () => {
         gp.board = [null, null, null, null, null, null, null, null, null];
         gp.availMoves = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-        gp.player1.board = [];
-        gp.player2.board = [];
         gp.playerMove = gp.player1;
         gp.gameOver = false;
         gp.winningPlayer = null;
     }
 
     const fillSquares = () => {
-       
+        for (let i = 0; i < gp.board.length; i++) {
+            if (!gp.board[i]) {
+                gp.board[i] = gp.winningPlayer.team;
+            }
+        } 
+    };
 
-        gp.board = gp.board.map(item => item = gp.winningPlayer.team);
-        render.draw();
-    }
-    
     const getBoard = (index) => {
         return gameProperties.board[index];
     }
 
-    const makeMove = (index) => {
+    function _fillBoardPosition(index) {
+        switch (gp.gameType) {
+            case 'pvp':
 
-        if (gp.gameType == 'pvp' && gp.board[index] == null) {
+                if (gp.board[index]) { return};
+                gp.board[index] = gp.playerMove.team; // Set board square to player team
+                gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1; // Switch moving player
+                _winCheck(); // Check if Win
+                break;
 
-            gp.board[index] = gp.playerMove.team;
-            gp.playerMove.board.push(index);
-            gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1;
+            case 'cpu':
 
-            winCheck();
-            
-        } else if (gp.gameType == 'cpu' && gp.board[index] == null) {
-            gp.board[index] = gp.player1.team;
-            gp.player1.board.push(index);
-            gp.availMoves = gp.availMoves.filter(function(e) { return e !== index} );
-            
-            winCheck();
-
-            if (gp.gameOver != true) {
-
-                const cpuIndex = gp.availMoves[Math.floor(Math.random() * gp.availMoves.length)];
-    
-                gp.board[cpuIndex] = gp.player2.team;
-                gp.player2.board.push(cpuIndex);
-                gp.availMoves = gp.availMoves.filter(function(e) { return e !== cpuIndex} );
-
-                winCheck();
-    
-            }
-            
-
+                if (gp.board[index]) { return };
+                gp.board[index] = gp.player1.team; // Set board square to Player1 team
+                _winCheck(); // Check if Win
+                _fillBoardPositionCpu(); // Cpu Move
+                break;
         }
-
-        
     }
 
-    const winCheck = () => {
-
-        const ply1Board = gp.player1.board;
-        const ply2Board = gp.player2.board;
+    function _fillBoardPositionCpu() {
+        if (gp.gameOver) { return }
         
-        for (let i = 0; i < gp.winCombinations.length; i++) {
-
-
-            const trueCheckPly1 = gp.winCombinations[i].every(element => ply1Board.includes(element));
-            const trueCheckPly2 = gp.winCombinations[i].every(element => ply2Board.includes(element));
-
-
-            if (trueCheckPly1) {
-
-                gp.gameOver = true;
-                gp.gameWinner = gp.player1;
-                render.draw();
-
-            } else if (trueCheckPly2) {
-                
-                gp.gameOver = true;
-                gp.gameWinner = gp.player2;
-                render.draw();
-
-            } else if (!trueCheckPly1 && !trueCheckPly2 && gp.availMoves.length == 0) {
-               
-                gp.gameOver = true;
-                gp.gameWinner = 'draw';
-                render.draw();
-
-            } else {
-                render.draw();
-            }
-
-
+        function _getRandomBoardIndex() { // Gets a Random index based on the GameBoard length
+            const index = Math.floor(Math.random() * gp.board.length);
+            return index;
         }
 
+        function _checkRandomBoardIndex(index) { // Checks if index returns a board square that is available, if not find new index
+            for (let i = 0; i < Infinity; i++) {
+                if (!gp.board[index]) {
+                    return index;
+                } else {
+                    index = _getRandomBoardIndex();
+                }
+            }
+        }
+
+        function _getBoardIndex() { // Returns a index that has an empty board square
+            let randomIndex = _getRandomBoardIndex();
+            let checkedIndex = _checkRandomBoardIndex(randomIndex);
+
+            return checkedIndex;
+        }
+
+        let cpuIndex = _getBoardIndex();
+        gp.board[cpuIndex] = gp.player2.team;
+        _winCheck();
+    }
+
+    const makeMove = (index) => {
+        _fillBoardPosition(index);
+    }
+
+    const _winCheck = () => {
+
+        function getPlayerTeam(num) {
+            switch (num) {
+                case 1:
+                    return gp.player1.team;
+                case 2:
+                    return gp.player2.team;
+            }
+        }
+
+        function getActiveSquaresArray(player) {
+            let obj = []
+    
+            for (let i = 0; i < gp.board.length; i++) {
+                if (gp.board[i] == player) {
+                    obj.push(i);
+                }
+            }
+            
+            return obj;
+        }
+
+        function checkGameStatus(ply1, ply2) {
+
+            for (let i = 0; i < gp.winCombinations.length; i++) {
+                const isPlayer1Win = gp.winCombinations[i].every(element => ply1.includes(element));
+                const isPlayer2Win = gp.winCombinations[i].every(element => ply2.includes(element));
+
+                if (isPlayer1Win) {
+                    return 'player1';
+                } else if (isPlayer2Win) {
+                    return 'player2';
+                }
+            }
+
+            if (getSquaresLeft() == 0) {
+                return 'draw';
+            } 
+
+            return false;
+        }
+
+        function setGameProperties (winner) {
+            switch (winner) {
+                case 'player1':
+                    gp.gameOver = true;
+                    gp.gameWinner = gp.player2;
+                    break;
+                case 'player2':
+                    gp.gameOver = true;
+                    gp.gameWinner = gp.player1;
+                    break;
+                case 'draw':
+                    gp.gameOver = true;
+                    gp.gameWinner = 'draw';
+                    break;
+            }   
+        }
+
+        function getSquaresLeft() {
+            let count = 9;
+            for (let i = 0; i < gp.board.length; i++) {
+                if (gp.board[i]) {
+                    count--;
+                }
+            }
+            return count;
+        }
+
+        const player1Board = getActiveSquaresArray(getPlayerTeam(1));
+        const player2Board = getActiveSquaresArray(getPlayerTeam(2));
+
+        const winner = checkGameStatus(player1Board, player2Board);
+
+        switch (winner) {
+            case 'player1':
+                setGameProperties('player1');
+                render.draw();
+                console.log('ply1');
+                break;
+
+            case 'player2': 
+                setGameProperties('player2');
+                render.draw();
+                console.log('ply2');
+                break;
+
+            case 'draw':
+                setGameProperties('draw');
+                render.draw();
+                console.log('draw');
+                break;
+
+            case false:
+                render.draw();
+                break;
+        }
     }
 
     return { gameProperties, PlayerCreator, setupGame, getBoard, makeMove, reset, fillSquares }
