@@ -260,7 +260,6 @@ const game = (() => {
     }
     
     const makeMove = (index) => {
-        
         function _fillBoardPosition(index) {
             switch (gp.gameType) {
                 case 'pvp':
@@ -268,53 +267,119 @@ const game = (() => {
                     if (gp.board[index]) { return};
                     gp.board[index] = gp.playerMove.team; // Set board square to player team
                     gp.playerMove = (gp.playerMove == gp.player1) ? gp.player2 : gp.player1; // Switch moving player
-                    _winCheck(); // Check if Win
+                    _winCheck(false); // Check if Win
                     break;
     
                 case 'cpu':
     
                     if (gp.board[index]) { return };
                     gp.board[index] = gp.player1.team; // Set board square to Player1 team
-                    _winCheck(); // Check if Win
+                    _winCheck(false); // Check if Win
                     _fillBoardPositionCpu(); // Cpu Move
                     break;
             }
         }
     
         function _fillBoardPositionCpu() {
-        if (gp.gameOver) { return }
-        
-            function _getRandomBoardIndex() { // Gets a Random index based on the GameBoard length
-                const index = Math.floor(Math.random() * gp.board.length);
-                return index;
-            }
-    
-            function _checkRandomBoardIndex(index) { // Checks if index returns a board square that is available, if not find new index
-                for (let i = 0; i < Infinity; i++) {
-                    if (!gp.board[index]) {
-                        return index;
-                    } else {
-                        index = _getRandomBoardIndex();
-                    }
-                }
-            }
-    
-            function _getBoardIndex() { // Returns a index that has an empty board square
-                let randomIndex = _getRandomBoardIndex();
-                let checkedIndex = _checkRandomBoardIndex(randomIndex);
-    
-                return checkedIndex;
-            }
-    
-            let cpuIndex = _getBoardIndex();
-            gp.board[cpuIndex] = gp.player2.team;
-            _winCheck();
-        }
+            if (gp.gameOver) { return};
 
+            let points = {
+                win: +10,
+                loss: -10,
+                draw: 0,
+            }
+
+            function minimax(board, depth, maximizingPlayer) {
+
+
+                let result = _winCheck(true, board);
+                
+                if (result !== false) {
+
+                    switch (result) {  
+                        case 'win':
+                            return 10 - depth;
+                        case 'loss':
+                            return depth - 10;
+                        case 'draw':
+                            return 0;
+                    }
+
+                }
+                
+
+               
+                if (maximizingPlayer) {
+                    let bestScore = -Infinity;
+
+                    for (let i = 0; i < board.length; i++) {
+
+
+                        if (!board[i]) {
+                            board[i] = gp.player2.team;
+                            let score = minimax(board, depth + 1, false);
+                            board[i] = null;
+                            bestScore = Math.max(score, bestScore);
+                            
+                        }
+                    }
+
+                    return bestScore;
+
+
+
+                } else if (!maximizingPlayer) {
+
+                    let bestScore = Infinity;
+
+                    for (let i = 0; i < board.length; i++) {
+
+                        if (!board[i]) {
+                            board[i] = gp.player1.team;
+                            let score = minimax(board, depth + 1, true);
+                            board[i] = null
+                            bestScore = Math.min(score, bestScore);
+                        }
+
+                    }
+                    
+                    return bestScore;
+                }
+
+
+            }
+        
+            let tempBoard = gp.board;
+            let bestScore = -Infinity;
+            let bestMove = null;
+            let scores = []
+
+           
+
+            for (let i = 0; i < tempBoard.length; i++) {
+                if (!tempBoard[i]) {
+                    tempBoard[i] = gp.player2.team;
+                    let score = minimax(tempBoard, 0, true);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    } 
+                    tempBoard[i] = null;
+                    scores.push(score);
+                }
+    
+            }
+           
+            console.log(scores);
+            console.log (bestMove);
+
+            gp.board[bestMove] = gp.player2.team;
+            _winCheck(false);
+        }
         _fillBoardPosition(index);
     }
 
-    const _winCheck = () => {
+    const _winCheck = (isMinimax, node) => {
 
         function getPlayerTeam(num) {
             switch (num) {
@@ -327,13 +392,25 @@ const game = (() => {
 
         function getActiveSquaresArray(player) {
             let obj = []
-    
-            for (let i = 0; i < gp.board.length; i++) {
-                if (gp.board[i] == player) {
-                    obj.push(i);
-                }
+            
+            switch (isMinimax) {
+                case true:
+                    for (let i = 0; i < node.length; i++) {
+                        if (node[i] == player) {
+                            obj.push(i);
+                        }
+                    };
+                    break;
+                case false:
+                    for (let i = 0; i < gp.board.length; i++) {
+                        if (gp.board[i] == player) {
+                            obj.push(i);
+                        }
+                    };
+                    break;
             }
             
+       
             return obj;
         }
 
@@ -343,16 +420,21 @@ const game = (() => {
                 const isPlayer1Win = gp.winCombinations[i].every(element => ply1.includes(element));
                 const isPlayer2Win = gp.winCombinations[i].every(element => ply2.includes(element));
 
+                
+                
+                
+
                 if (isPlayer1Win) {
                     return 'player1';
                 } else if (isPlayer2Win) {
                     return 'player2';
-                }
+                } else if (!isPlayer1Win && !isPlayer2Win && getSquaresLeft() == 0) {
+                    return 'draw';
+                } 
+
+               
             }
 
-            if (getSquaresLeft() == 0) {
-                return 'draw';
-            } 
 
             return false;
         }
@@ -376,38 +458,75 @@ const game = (() => {
 
         function getSquaresLeft() {
             let count = 9;
-            for (let i = 0; i < gp.board.length; i++) {
-                if (gp.board[i]) {
-                    count--;
-                }
+
+            switch (isMinimax) {
+                case true:
+                    for (let i = 0; i < node.length; i++) {
+                        if (node[i]) {
+                            count--
+                        }
+                    }
+                    break;
+                case false:
+                    for (let i = 0; i < gp.board.length; i++) {
+                        if (gp.board[i]) {
+                            count--;
+                        }
+                    }
             }
+
+
+           
             return count;
         }
 
         const player1Board = getActiveSquaresArray(getPlayerTeam(1));
         const player2Board = getActiveSquaresArray(getPlayerTeam(2));
 
+        
+
         const winner = checkGameStatus(player1Board, player2Board);
 
-        switch (winner) {
-            case 'player1':
-                setGameProperties('player1');
-                render.draw();
-                break;
-
-            case 'player2': 
-                setGameProperties('player2');
-                render.draw();
-                break;
-
-            case 'draw':
-                setGameProperties('draw');
-                render.draw();
-                break;
-
+        switch (isMinimax) {
+            case true:
+                
+            
+                switch (winner) {
+                    
+                    case 'player1':
+                        return 'loss'
+                
+                    case 'player2': 
+                        return 'win'
+        
+                    case 'draw':
+                        return 'draw'
+        
+                    case false:
+                        return false;
+                }
+            
             case false:
-                render.draw();
-                break;
+                switch (winner) {
+                    case 'player1':
+                        setGameProperties('player1');
+                        render.draw();
+                        break;
+        
+                    case 'player2': 
+                        setGameProperties('player2');
+                        render.draw();
+                        break;
+        
+                    case 'draw':
+                        setGameProperties('draw');
+                        render.draw();
+                        break;
+        
+                    case false:
+                        render.draw();
+                        break;
+                }
         }
     }
 
