@@ -317,7 +317,7 @@ const game = (() => {
 
                         if (!board[i]) {
                             board[i] = gp.player2.team;
-                            let score = minimax(board, depth - 1, false);
+                            let score = minimax(board, depth + 1, false);
                             board[i] = null;
                             bestScore = Math.max(score, bestScore);
                             
@@ -336,7 +336,7 @@ const game = (() => {
 
                         if (!board[i]) {
                             board[i] = gp.player1.team;
-                            let score = minimax(board, depth - 1, true);
+                            let score = minimax(board, depth + 1, true);
                             board[i] = null
                             bestScore = Math.min(score, bestScore);
                         }
@@ -416,27 +416,32 @@ const game = (() => {
 
         function checkGameStatus(ply1, ply2) {
 
+            let check;
+            let isPlayer1WinCheck;
+            let isPlayer2WinCheck;
+
             for (let i = 0; i < gp.winCombinations.length; i++) {
                 const isPlayer1Win = gp.winCombinations[i].every(element => ply1.includes(element));
                 const isPlayer2Win = gp.winCombinations[i].every(element => ply2.includes(element));
 
-                
-                
-                
-
                 if (isPlayer1Win) {
-                    return 'player1';
-                } else if (isPlayer2Win) {
-                    return 'player2';
-                } else if (!isPlayer1Win && !isPlayer2Win && getSquaresLeft() == 0) {
-                    return 'draw';
-                } 
+                    isPlayer1WinCheck = true;
 
-               
+                } else if (isPlayer2Win) {
+                    isPlayer2WinCheck = true;
+                }
             }
 
-
-            return false;
+            if (isPlayer1WinCheck) {
+                return 'player1';
+            } else if (isPlayer2WinCheck) {
+                return 'player2'
+            } else if (!isPlayer1WinCheck && !isPlayer2WinCheck && getSquaresLeft() == 0) {
+                return 'draw'
+            } else {
+                return false;
+            }
+            
         }
 
         function setGameProperties (winner) {
