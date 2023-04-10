@@ -317,7 +317,7 @@ const game = (() => {
 
                         if (!board[i]) {
                             board[i] = gp.player2.team;
-                            let score = minimax(board, depth + 1, false);
+                            let score = minimax(board, depth - 1, false);
                             board[i] = null;
                             bestScore = Math.max(score, bestScore);
                             
@@ -336,7 +336,7 @@ const game = (() => {
 
                         if (!board[i]) {
                             board[i] = gp.player1.team;
-                            let score = minimax(board, depth + 1, true);
+                            let score = minimax(board, depth - 1, true);
                             board[i] = null
                             bestScore = Math.min(score, bestScore);
                         }
@@ -359,7 +359,7 @@ const game = (() => {
             for (let i = 0; i < tempBoard.length; i++) {
                 if (!tempBoard[i]) {
                     tempBoard[i] = gp.player2.team;
-                    let score = minimax(tempBoard, 0, true);
+                    let score = minimax(tempBoard, 0, false);
                     if (score > bestScore) {
                         bestScore = score;
                         bestMove = i;
