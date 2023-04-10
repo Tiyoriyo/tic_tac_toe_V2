@@ -260,6 +260,74 @@ const game = (() => {
     }
     
     const makeMove = (index) => {
+
+        function _fillBoardPositionCpu() {
+            if (gp.gameOver) { return};
+
+            function minimax(board, depth, maximizingPlayer) {
+                let result = _winCheck(true, board);
+                
+                if (result !== false) {
+                    switch (result) {  
+                        case 'win':
+                            return 10 - depth;
+                        case 'loss':
+                            return depth - 10;
+                        case 'draw':
+                            return 0;
+                    }
+                }
+                
+                if (maximizingPlayer) {
+                    let bestScore = -Infinity;
+                    for (let i = 0; i < board.length; i++) {
+                        if (!board[i]) {
+                            board[i] = gp.player2.team;
+                            let score = minimax(board, depth + 1, false);
+                            board[i] = null;
+                            bestScore = Math.max(score, bestScore);    
+                        }
+                    }
+
+                    return bestScore;
+
+                } else if (!maximizingPlayer) {
+                    let bestScore = Infinity;
+                    for (let i = 0; i < board.length; i++) {
+                        if (!board[i]) {
+                            board[i] = gp.player1.team;
+                            let score = minimax(board, depth + 1, true);
+                            board[i] = null
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                    
+                    return bestScore;
+                }
+            }
+        
+            let tempBoard = gp.board;
+            let bestScore = -Infinity;
+            let bestMove = null;
+
+            for (let i = 0; i < tempBoard.length; i++) {
+                if (!tempBoard[i]) {
+                    tempBoard[i] = gp.player2.team;
+                    let score = minimax(tempBoard, 0, false);
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    } 
+
+                    tempBoard[i] = null;
+                }
+            }
+
+            gp.board[bestMove] = gp.player2.team;
+            _winCheck(false);
+        }
+
         function _fillBoardPosition(index) {
             switch (gp.gameType) {
                 case 'pvp':
@@ -279,104 +347,9 @@ const game = (() => {
                     break;
             }
         }
-    
-        function _fillBoardPositionCpu() {
-            if (gp.gameOver) { return};
-
-            let points = {
-                win: +10,
-                loss: -10,
-                draw: 0,
-            }
-
-            function minimax(board, depth, maximizingPlayer) {
-
-
-                let result = _winCheck(true, board);
-                
-                if (result !== false) {
-
-                    switch (result) {  
-                        case 'win':
-                            return 10 - depth;
-                        case 'loss':
-                            return depth - 10;
-                        case 'draw':
-                            return 0;
-                    }
-
-                }
-                
-
-               
-                if (maximizingPlayer) {
-                    let bestScore = -Infinity;
-
-                    for (let i = 0; i < board.length; i++) {
-
-
-                        if (!board[i]) {
-                            board[i] = gp.player2.team;
-                            let score = minimax(board, depth + 1, false);
-                            board[i] = null;
-                            bestScore = Math.max(score, bestScore);
-                            
-                        }
-                    }
-
-                    return bestScore;
-
-
-
-                } else if (!maximizingPlayer) {
-
-                    let bestScore = Infinity;
-
-                    for (let i = 0; i < board.length; i++) {
-
-                        if (!board[i]) {
-                            board[i] = gp.player1.team;
-                            let score = minimax(board, depth + 1, true);
-                            board[i] = null
-                            bestScore = Math.min(score, bestScore);
-                        }
-
-                    }
-                    
-                    return bestScore;
-                }
-
-
-            }
-        
-            let tempBoard = gp.board;
-            let bestScore = -Infinity;
-            let bestMove = null;
-            let scores = []
-
-           
-
-            for (let i = 0; i < tempBoard.length; i++) {
-                if (!tempBoard[i]) {
-                    tempBoard[i] = gp.player2.team;
-                    let score = minimax(tempBoard, 0, false);
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove = i;
-                    } 
-                    tempBoard[i] = null;
-                    scores.push(score);
-                }
-    
-            }
-           
-            console.log(scores);
-            console.log (bestMove);
-
-            gp.board[bestMove] = gp.player2.team;
-            _winCheck(false);
-        }
+            
         _fillBoardPosition(index);
+            
     }
 
     const _winCheck = (isMinimax, node) => {
@@ -416,27 +389,27 @@ const game = (() => {
 
         function checkGameStatus(ply1, ply2) {
 
-            let check;
-            let isPlayer1WinCheck;
-            let isPlayer2WinCheck;
+            let isPlayer1Win;
+            let isPlayer2Win;
 
             for (let i = 0; i < gp.winCombinations.length; i++) {
-                const isPlayer1Win = gp.winCombinations[i].every(element => ply1.includes(element));
-                const isPlayer2Win = gp.winCombinations[i].every(element => ply2.includes(element));
+                const isPlayer1WinCheck = gp.winCombinations[i].every(element => ply1.includes(element));
+                const isPlayer2WinCheck = gp.winCombinations[i].every(element => ply2.includes(element));
 
-                if (isPlayer1Win) {
-                    isPlayer1WinCheck = true;
+                if (isPlayer1WinCheck) {
+                    isPlayer1Win = true;
 
-                } else if (isPlayer2Win) {
-                    isPlayer2WinCheck = true;
+                } else if (isPlayer2WinCheck) {
+                    isPlayer2Win = true;
                 }
+
             }
 
-            if (isPlayer1WinCheck) {
+            if (isPlayer1Win) {
                 return 'player1';
-            } else if (isPlayer2WinCheck) {
+            } else if (isPlayer2Win) {
                 return 'player2'
-            } else if (!isPlayer1WinCheck && !isPlayer2WinCheck && getSquaresLeft() == 0) {
+            } else if (!isPlayer1Win && !isPlayer2Win && getSquaresLeft() == 0) {
                 return 'draw'
             } else {
                 return false;
@@ -494,10 +467,7 @@ const game = (() => {
 
         switch (isMinimax) {
             case true:
-                
-            
                 switch (winner) {
-                    
                     case 'player1':
                         return 'loss'
                 
